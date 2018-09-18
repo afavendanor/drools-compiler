@@ -1,0 +1,19 @@
+#Gradle
+**/.gradle/
+
+#Intellij
+**/.idea/
+**/build/
+**/bin/
+**/out/
+**/*.iml
+
+#Eclipse
+### Eclipse template
+**/.settings/
+**/.metadata
+**/.project
+**/.classpath
+
+#Logs
+**/log/

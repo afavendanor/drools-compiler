@@ -1,0 +1,101 @@
+template header
+codeRule
+conditionsList
+conditionType: String
+actions: String
+firstRow: Boolean
+
+package co.com.suramericana.drl.itu;
+
+import co.com.suramericana.drl.rule.object.Dato
+import co.com.suramericana.drl.rule.object.ListGroup
+import co.com.suramericana.drl.rule.object.Recomendacion
+import java.util.List
+
+declare Recomendacion
+	@propertyReactive
+end
+
+rule "Validate group"
+when
+	$group : ListGroup()
+	$list : List() from collect (Dato(group == $group.getId()))
+then
+end
+
+template "Rule groups main"
+conditionType == 'GroupCondition'
+actions == 'false'
+firstRow == true
+rule "Rule_@{codeRule}_@{row.rowNumber}" extends "Validate group"
+	agenda-group "MAIN"
+    when
+    	@{conditionsList} from $list;
+    then
+       System.out.println("Rule_@{codeRule}_@{row.rowNumber}");
+       drools.setFocus("@{codeRule}-@{row.rowNumber+1}");
+end
+end template
+
+template "Rule groups"
+conditionType == 'GroupCondition'
+actions == 'false'
+firstRow == false
+rule "Rule_@{codeRule}_@{row.rowNumber}" extends "Validate group"
+	agenda-group "@{codeRule}-@{row.rowNumber}"
+    when
+    	@{conditionsList} from $list;
+    then
+       System.out.println("Rule_@{codeRule}_@{row.rowNumber}");
+       drools.setFocus("@{codeRule}-@{row.rowNumber+1}");
+end
+end template
+
+
+
+template "Rule conditions main"
+conditionType == 'SimpleCondition'
+actions == 'false'
+firstRow == true
+rule "Rule_@{codeRule}_@{row.rowNumber}"
+agenda-group "MAIN"
+    when
+        @{conditionsList}
+    then
+       	System.out.println("Rule_@{codeRule}_@{row.rowNumber}");
+       	drools.setFocus("@{codeRule}-@{row.rowNumber+1}");
+end
+end template
+
+
+template "Rule conditions"
+conditionType == 'SimpleCondition'
+actions == 'false'
+firstRow == false
+rule "Rule_@{codeRule}_@{row.rowNumber}"
+    agenda-group "@{codeRule}-@{row.rowNumber}"
+    when
+        @{conditionsList}
+    then
+       	System.out.println("Rule_@{codeRule}_@{row.rowNumber}");
+       	drools.setFocus("@{codeRule}-@{row.rowNumber+1}");
+end
+end template
+
+
+template "Rule lastRow"
+actions != 'false'
+firstRow == false
+rule "Rule_@{codeRule}_@{row.rowNumber}"
+	agenda-group "@{codeRule}-@{row.rowNumber}"
+    when
+    	@{conditionsList}
+    	$r: Recomendacion($l: actions)
+    then
+     String[] actions = {@{actions}};
+	for( int i = 0; i < actions.length; ++i ){
+    	String s = (String)actions[i];
+    	$l.add(s);
+  	}
+end
+end template

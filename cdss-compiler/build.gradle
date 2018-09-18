@@ -1,0 +1,61 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$vSpringBoot")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: "jacoco"
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group 'co.com.suramericana'
+version "$version"
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+wrapper.gradleVersion = '4.9'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = "$ceibaRepo"
+    }
+}
+
+dependencies {
+    //Spring
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "$vSpringBoot"
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "$vSpringBoot"
+    //Database
+    compile group: 'com.oracle', name: 'ojdbc7', version: "$vOjdbc"
+    //Logs
+    compile group: 'org.tinylog', name: 'tinylog', version: "$vTinyLog"
+    //Drools
+    compile group: 'org.drools', name: 'drools-templates', version: "$vDroolsTemplate"
+    //Json
+    compile group: 'com.google.code.gson', name: 'gson', version: "$vGson"
+    //Git
+    compile group: 'org.eclipse.jgit', name: 'org.eclipse.jgit', version: "$vJGit"
+    //Utils
+    compile group: 'commons-io', name: 'commons-io', version: "$vCommonsIO"
+
+    testCompile group:'junit', name:"junit", version:"$vJUnit"
+
+}
+
+bootJar {
+    baseName = 'cdss-compiler'
+    version =  "$version"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled true
+        html.destination file("${buildDir}/test-results/jacocoHtml")
+    }
+}
